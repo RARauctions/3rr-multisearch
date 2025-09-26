@@ -1,5 +1,6 @@
 flask
+gunicorn
 requests
 beautifulsoup4
 requests-html
-gunicorn
+pyppeteer

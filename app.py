@@ -52,16 +52,21 @@ def _extract_ids(html_text: str):
     return sorted(ids)
 
 def _render_js(url: str, timeout: int = 30) -> str:
-    """JS render via requests_html for pages that are client-rendered."""
+    """JS render via requests_html + pyppeteer on Render."""
     try:
         from requests_html import HTMLSession
     except Exception:
         return ""
     sess = HTMLSession()
     r = sess.get(url, timeout=timeout)
-    # If you ever hit sandbox errors on some hosts, add: args=['--no-sandbox']
-    r.html.render(timeout=timeout * 1000, sleep=1)
+    # Important flags for container envs; increase timeout for first render
+    r.html.render(
+        timeout=timeout * 1000,
+        sleep=1.0,
+        args=["--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu"]
+    )
     return r.html.html or ""
+
 
 def discover_auctions() -> list[int]:
     # Try static HTML
